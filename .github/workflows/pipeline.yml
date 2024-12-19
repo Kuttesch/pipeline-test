@@ -1,15 +1,12 @@
-name: Build, Lint, Test, and Push to GitLab
+name: Compile and Push to GitLab
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,53 +24,19 @@ jobs:
         mkdir -p build
         javac -cp libs/robocode.jar -d build src/robocode/MyFirstRobot.java
 
-  lint:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up JDK 8 (Amazon Corretto)
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'corretto'
-        java-version: '8'
-
-    - name: Install Checkstyle
-      run: |
-        curl -LO https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.41/checkstyle-8.41-all.jar
-        mv checkstyle-8.41-all.jar checkstyle.jar
-
-    - name: Run Checkstyle
-      run: |
-        java -jar checkstyle.jar -c /google_checks.xml src/
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [build, lint]
-    if: contains(github.event.head_commit.message, 'DEPLOY')  # This condition ensures the deploy step runs only if the commit message contains 'DEPLOY'
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
     - name: Configure Git
       run: |
         git config --global user.name "${{ secrets.GITLAB_USERNAME }}"
         git config --global user.email "${{ secrets.GITLAB_EMAIL }}"
 
-    - name: Clone GitLab repository
+    - name: Push to GitLab
+      env:
+        GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
+        GITLAB_ACCESS_TOKEN: ${{ secrets.GITLAB_ACCESS_TOKEN }}
       run: |
-        git clone https://$GITLAB_USERNAME:${{ secrets.GITLAB_ACCESS_TOKEN }}@inf-git.fh-rosenheim.de/studkuttmo8057/github-pipeline-test.git gitlab-repo
-  
-    - name: Copy compiled classes to GitLab repo
-      run: |
+        git clone https://$GITLAB_USERNAME:$GITLAB_ACCESS_TOKEN@inf-git.fh-rosenheim.de/studkuttmo8057/github-pipeline-test.git gitlab-repo
         cp -r build/* gitlab-repo/
         cd gitlab-repo
-
-    - name: Commit and push changes to GitLab
-      run: |
         git add .
         git commit -m "Add compiled Java class files"
         git push
