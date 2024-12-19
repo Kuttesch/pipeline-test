@@ -22,7 +22,7 @@ jobs:
     - name: Compile Java files
       run: |
         mkdir -p build
-        javac -d build src/**/*.java
+        javac -d build src/*.java
 
     - name: Configure Git
       run: |
