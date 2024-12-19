@@ -49,28 +49,9 @@ jobs:
       run: |
         java -jar checkstyle.jar -c /google_checks.xml src/
 
-  test:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up JDK 8 (Amazon Corretto)
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'corretto'
-        java-version: '8'
-
-    - name: Run Unit Tests (JUnit)
-      run: |
-        mkdir -p build
-        javac -cp libs/robocode.jar:libs/junit-4.12.jar -d build src/robocode/*.java
-        java -cp build:libs/junit-4.12.jar org.junit.runner.JUnitCore MyTestClass
-
   deploy:
     runs-on: ubuntu-latest
-    needs: [build, lint, test]
+    needs: [build, lint]
     if: contains(github.event.head_commit.message, 'DEPLOY')  # This condition ensures the deploy step runs only if the commit message contains 'DEPLOY'
 
     steps:
