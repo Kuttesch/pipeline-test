@@ -13,7 +13,8 @@ public class MyFirstRobot extends Robot {
             turnGunRight(360); // Scan for other robots
             back(100); // Move back 100 units
             turnGunRight(360); // Scan for other robots
-            AttachOperationFailedException.sleep(100); // Sleep for 100 milliseconds
+            back(100); // Move back 100 units
+            turnGunRight(360); // Scan for other robots
         }
     }
 
