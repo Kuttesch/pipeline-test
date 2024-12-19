@@ -1,8 +1,7 @@
-import robocode.Robot;
-import robocode.ScannedRobotEvent;
-
 package robocode;
 
+import robocode.Robot;
+import robocode.ScannedRobotEvent;
 
 public class MyFirstRobot extends Robot {
 
