@@ -1,0 +1,43 @@
+name: Compile and Push to GitLab
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up JDK 1.8 (Amazon Corretto)
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'corretto'
+        java-version: '1.8'
+
+    - name: Compile Java files
+      run: |
+        mkdir -p build
+        javac -d build src/**/*.java
+
+    - name: Configure Git
+      run: |
+        git config --global user.name "${{ secrets.GITLAB_USERNAME }}"
+        git config --global user.email "${{ secrets.GITLAB_EMAIL }}"
+
+    - name: Push to GitLab
+      env:
+        GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
+        GITLAB_ACCESS_TOKEN: ${{ secrets.GITLAB_ACCESS_TOKEN }}
+      run: |
+        # Add the compiled files to the repository
+        git clone https://$GITLAB_USERNAME:$GITLAB_ACCESS_TOKEN@inf-git.fh-rosenheim.de/studkuttmo8057/github-pipeline-test.git gitlab-repo
+        cp -r build/* gitlab-repo/
+        cd gitlab-repo
+        git add .
+        git commit -m "Add compiled Java class files"
+        git push
