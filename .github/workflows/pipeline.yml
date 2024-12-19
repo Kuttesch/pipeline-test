@@ -13,16 +13,20 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up JDK 1.8 (Amazon Corretto)
+    - name: Set up JDK 8 (Amazon Corretto)
       uses: actions/setup-java@v3
       with:
         distribution: 'corretto'
         java-version: '8'
 
+    - name: Download Robocode library
+      run: |
+        curl -L -o robocode.jar https://github.com/robo-code/robocode/releases/download/v1.9.3.9/robocode.jar
+
     - name: Compile Java files
       run: |
         mkdir -p build
-        javac -d build src/robocode/*.java
+        javac -cp robocode.jar -d build src/robocode/MyFirstRobot.java
 
     - name: Configure Git
       run: |
@@ -34,7 +38,6 @@ jobs:
         GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
         GITLAB_ACCESS_TOKEN: ${{ secrets.GITLAB_ACCESS_TOKEN }}
       run: |
-        # Add the compiled files to the repository
         git clone https://$GITLAB_USERNAME:$GITLAB_ACCESS_TOKEN@inf-git.fh-rosenheim.de/studkuttmo8057/github-pipeline-test.git gitlab-repo
         cp -r build/* gitlab-repo/
         cd gitlab-repo
