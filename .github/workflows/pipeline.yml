@@ -19,14 +19,10 @@ jobs:
         distribution: 'corretto'
         java-version: '8'
 
-    - name: Download Robocode library
-      run: |
-        curl -L -o robocode.jar https://github.com/robo-code/robocode/releases/download/v1.9.3.9/robocode.jar
-
     - name: Compile Java files
       run: |
         mkdir -p build
-        javac -cp robocode.jar -d build src/robocode/MyFirstRobot.java
+        javac -cp libs/robocode.jar -d build src/robocode/MyFirstRobot.java
 
     - name: Configure Git
       run: |
