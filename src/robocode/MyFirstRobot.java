@@ -1,6 +1,5 @@
 package robocode;
 
-import com.sun.tools.attach.AttachOperationFailedException;
 import robocode.Robot;
 import robocode.ScannedRobotEvent;
 
