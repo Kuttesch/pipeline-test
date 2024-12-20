@@ -14,7 +14,7 @@ public class MyFirstRobot extends Robot {
             turnGunRight(360); // Scan for other robots
             back(100); // Move back 100 units
             turnGunRight(360); // Scan for other robots
-            wait(10);
+            //prml
         }
     }
 
